@@ -1,19 +1,17 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100">
-    <div class="backdrop-blur-lg bg-white/60 shadow-2xl border border-white/30 rounded-3xl w-full max-w-2xl p-8 transition-all duration-300">
-      <TodoHeader :remaining="remainingTasks" />
-      <TodoInput
-        v-model="newTask"
-        :isEditing="isEditing"
-        :disabled="tasks.length > 4 && !isEditing"
-        @submit="isEditing ? updateTask() : addTask()"
-      />
-      <TodoList
-        :tasks="tasks"
-        @edit="editTask"
-        @delete="deleteTask"
-      />
-    </div>
+  <div>
+    <TodoHeader :remaining="remaining" />
+    <TodoInput
+      v-model="newTask"
+      :isEditing="isEditing"
+      :disabled="tasks.length > 4 && !isEditing"
+      @submit="isEditing ? updateTask() : addTask()"
+    />
+    <TodoList
+      :tasks="tasks"
+      @edit="editTask"
+      @delete="deleteTask"
+    />
   </div>
 </template>
 
@@ -37,7 +35,7 @@ export default {
     };
   },
   computed: {
-    remainingTasks() {
+    remaining() {
       return this.tasks.length;
     }
   },
