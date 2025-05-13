@@ -11,7 +11,13 @@
 
 <script>
 export default {
-  props: ['remaining']
+  computed: {
+    remaining() {
+      return this.$store.getters.remainingTasks;
+    }
+  }
 }
 </script>
-s
+
+<style scoped>
+</style>

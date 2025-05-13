@@ -5,57 +5,58 @@ export default createStore({
     tasks: [],
     newTask: "",
     isEditing: false,
-    editingIndex: null,
+    editIndex: null,
   },
   mutations: {
     SET_NEW_TASK(state, payload) {
       state.newTask = payload;
     },
     ADD_TASK(state) {
-      state.tasks.push(state.newTask.trim());
+      if (!state.newTask.trim()) return;
+      state.tasks.push({
+        id: Date.now(),
+        name: state.newTask.trim(),
+      });
       state.newTask = "";
     },
     DELETE_TASK(state, index) {
       state.tasks.splice(index, 1);
     },
-    START_EDIT(state, index) {
-      state.newTask = state.tasks[index];
+    EDIT_TASK(state, index) {
+      state.newTask = state.tasks[index].name;
       state.isEditing = true;
-      state.editingIndex = index;
+      state.editIndex = index;
     },
     UPDATE_TASK(state) {
-      if (state.editingIndex !== null) {
-        state.tasks[state.editingIndex] = state.newTask.trim();
-        state.newTask = "";
-        state.isEditing = false;
-        state.editingIndex = null;
-      }
+      if (!state.newTask.trim()) return;
+      state.tasks[state.editIndex].name = state.newTask.trim();
+      state.isEditing = false;
+      state.editIndex = null;
+      state.newTask = "";
     },
   },
   actions: {
-    addTask({ commit, state }) {
-      if (state.newTask.trim()) {
-        commit("ADD_TASK");
-      }
+    addTask({ commit }) {
+      commit("ADD_TASK");
     },
     deleteTask({ commit }, index) {
       commit("DELETE_TASK", index);
     },
     editTask({ commit }, index) {
-      commit("START_EDIT", index);
+      commit("EDIT_TASK", index);
     },
-    updateTask({ commit, state }) {
-      if (state.newTask.trim()) {
-        commit("UPDATE_TASK");
-      }
+    updateTask({ commit }) {
+      commit("UPDATE_TASK");
+    },
+    setNewTask({ commit }, val) {
+      commit("SET_NEW_TASK", val);
     },
   },
   getters: {
     tasks: (state) => state.tasks,
     newTask: (state) => state.newTask,
     isEditing: (state) => state.isEditing,
-    editingIndex: (state) => state.editingIndex,
-    taskLimitReached: (state) => state.tasks.length > 4 && !state.isEditing,
+    taskLimitReached: (state) => state.tasks.length >= 10,
     remainingTasks: (state) => state.tasks.length,
   },
 });

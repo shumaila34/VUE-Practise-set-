@@ -4,48 +4,47 @@
       type="text"
       class="flex-1 p-3 border border-purple-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-purple-400 transition duration-200"
       placeholder="Type a task..."
-      v-model="input"
+      :value="$store.state.newTask"
+      @input="$store.dispatch('setNewTask', $event.target.value)"
       @keyup.enter="submit"
-      :disabled="disabled"
+      :disabled="$store.getters.taskLimitReached"
     />
     <div>
       <button
-        v-if="!isEditing && !disabled"
+        v-if="!$store.getters.taskLimitReached"
         @click="submit"
-        class="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold px-6 py-2 rounded-lg shadow-md transition duration-300"
+        :class="buttonClass"
+        class="text-white font-bold px-6 py-2 rounded-lg shadow-md transition duration-300"
       >
-        Add
+        {{ $store.getters.isEditing ? 'Update' : 'Add' }}
       </button>
-      <button
-        v-else-if="isEditing"
-        @click="submit"
-        class="bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-bold px-6 py-2 rounded-lg shadow-md transition duration-300"
-      >
-        Update
-      </button>
-      <p v-else class="text-red-500 font-semibold text-sm mt-1">🚫 Task limit reached</p>
+      <p v-else class="text-red-500 font-semibold text-sm mt-1">
+        Task limit reached
+      </p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['modelValue', 'isEditing', 'disabled'],
-  emits: ['update:modelValue', 'submit'],
-  computed: {
-    input: {
-      get() {
-        return this.modelValue
-      },
-      set(val) {
-        this.$emit('update:modelValue', val)
+  methods: {
+    submit() {
+      if (this.$store.getters.isEditing) {
+        this.$store.dispatch('updateTask');
+      } else {
+        this.$store.dispatch('addTask');
       }
     }
   },
-  methods: {
-    submit() {
-      this.$emit('submit')
+  computed: {
+    buttonClass() {
+      return this.$store.getters.isEditing
+        ? 'bg-green-500 hover:bg-green-600'
+        : 'bg-purple-600 hover:bg-purple-700';
     }
   }
 }
 </script>
+
+<style scoped>
+</style>
